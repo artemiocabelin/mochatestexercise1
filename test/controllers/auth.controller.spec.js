@@ -1,5 +1,11 @@
 var assert = require('assert');
 var authController = require('../../controllers/auth.controller');
+var expect = require('chai').expect;
+var should = require('chai').should();
+var chai = require('chai');
+var chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+chai.should();
 
 // ---This beforeEach() will attach to the global describe and will run before any test runs
 // beforeEach(function () {
@@ -21,19 +27,24 @@ describe('AuthController', function() {
     // beforeEach('this function is erroring intentionally',function erroringFunction() {
     //     throw({error: 'error'});
     // })
+
     describe('isAuthorized', function() {
+        
         it('Should return false if not authorized', function() {
+            var isAuth = authController.isAuthorized('admin');
             // this.skip if you want mocha to skip this 'it' test
-            assert.equal(false, authController.isAuthorized('admin'));
+            expect(isAuth).to.be.false;
         })
         it('Should return true if authorized', function() {
             authController.setRoles(['user','admin']);
-            assert.equal(true, authController.isAuthorized('admin'));
+            var isAuth = authController.isAuthorized('admin');
+            isAuth.should.be.true;
         })
         it('should not allow get if not authorized')
         it('should allow get if authorized')
     })
-    describe.only('isAuthorizedAsync', function() {
+
+    describe('isAuthorizedAsync', function() {
         it('Should return false if not authorized', function(done) {
             this.timeout(2500);
             authController.isAuthorizedAsync('admin', 
@@ -41,6 +52,12 @@ describe('AuthController', function() {
                 assert.equal(false, isAuth);
                 done();
             });
+        })
+    })
+
+    describe('isAuthorizedPromise', function() {
+        it('Should return false if not authorized', function() {
+           return authController.isAuthorizedPromise('admin').should.eventually.be.false;
         })
     })
 });
